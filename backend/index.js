@@ -1,9 +1,11 @@
 const express = require('express');
 const { z } = require('zod');
 require('express-async-errors');
+const cors = require("cors");
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Hardcoded values
 const HARDCODED = {
@@ -14,7 +16,7 @@ const HARDCODED = {
 
 // Zod Schema for validation
 const postRequestSchema = z.object({
-  data: z.array(z.union([z.string(), z.number()])).min(1)
+  data: z.array(z.string()).min(1, "Data array must not be empty")
 });
 
 // Validation Middleware
@@ -45,27 +47,34 @@ app.use((err, req, res, next) => {
 app.post('/bfhl', validateRequest(postRequestSchema), (req, res) => {
   const { data } = req.validatedData;
 
+  // Additional check for empty array
+  if (data.length === 0) {
+    return res.status(400).json({
+      is_success: false,
+      message: "Data array must not be empty"
+    });
+  }
+
   const numbers = [];
   const alphabets = [];
   const alphabetsUpperCase = [];
   const invalidInputs = [];
 
   data.forEach(item => {
-    const strItem = item.toString();
-    if (!isNaN(strItem)) {
-      numbers.push(strItem);
-    } else if (/^[a-zA-Z]$/.test(strItem)) {
-      alphabets.push(strItem);
-      alphabetsUpperCase.push(strItem.toUpperCase());
+    if (/^[0-9]+$/.test(item)) {
+      numbers.push(item);
+    } else if (/^[a-zA-Z]$/.test(item)) {
+      alphabets.push(item);
+      alphabetsUpperCase.push(item.toUpperCase());
     } else {
-      invalidInputs.push(strItem);
+      invalidInputs.push(item);
     }
   });
 
   if (invalidInputs.length > 0) {
     return res.status(400).json({
       is_success: false,
-      message: "Invalid input detected. Only single letters or numbers are allowed.",
+      message: "Invalid input detected. Only single letters or numbers (in quotes) are allowed.",
       invalid_inputs: invalidInputs
     });
   }
