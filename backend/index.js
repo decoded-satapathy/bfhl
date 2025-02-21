@@ -11,7 +11,7 @@ app.use(cors());
 const HARDCODED = {
   EMAIL: '22bcs14524@cuchd.in',
   ROLL_NUMBER: '22BCS14524',
-  USER_ID: '22bcs14524_22082003' // Format: {user_id}_{ddmmyyyy}
+  USER_ID: '22bcs14524_01022005' // Format: {user_id}_{ddmmyyyy}
 };
 
 // Zod Schema for validation
