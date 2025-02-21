@@ -51,7 +51,7 @@ function App() {
     setLoading(true);
     try {
       const { data } = await axios.post<ApiResponse | ApiError>(
-        'http://localhost:3000/bfhl',
+        'https://bfhl-k1b6.onrender.com/bfhl',
         parsedData
       );
 
